@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.DataOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -18,10 +19,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        CallAPILoginAsyncTask().execute()
+        CallAPILoginAsyncTask("Jakub", "123456").execute()
     }
 
-    private inner class CallAPILoginAsyncTask(): AsyncTask<Any, Void, String>() {
+    private inner class CallAPILoginAsyncTask(val username: String, val password: String): AsyncTask<Any, Void, String>() {
 
         private lateinit var customProgressDialog : Dialog
 
@@ -41,6 +42,25 @@ class MainActivity : AppCompatActivity() {
                 connection = url.openConnection() as HttpURLConnection
                 connection.doInput = true
                 connection.doOutput = true
+
+                connection.instanceFollowRedirects = false // Don't follow redirects
+
+                connection.requestMethod = "POST" // POST request
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.setRequestProperty("charset", "utf-8")
+                connection.setRequestProperty("Accept", "application/json")
+
+                connection.useCaches = false
+
+                //writing data
+                val writeDataOutputStream = DataOutputStream(connection.outputStream)
+                val jsonRequest = JSONObject()
+                jsonRequest.put("username", username)
+                jsonRequest.put("password", password)
+
+                writeDataOutputStream.writeBytes(jsonRequest.toString())
+                writeDataOutputStream.flush()
+                writeDataOutputStream.close()
 
                 val httpResult : Int = connection.responseCode //retrieving data
 
