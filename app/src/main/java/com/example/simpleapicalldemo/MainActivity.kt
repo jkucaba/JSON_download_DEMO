@@ -5,6 +5,7 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.gson.Gson
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -105,6 +106,26 @@ class MainActivity : AppCompatActivity() {
 
             Log.i("JSON RESPONSE RESULT", result)
 
+            //Using GSON instead of JSON
+            val responseData = Gson().fromJson(result, ResponseData::class.java)
+            Log.i("Message", responseData.message)
+            Log.i("User ID", "${responseData.user_id}")
+            Log.i("Name", responseData.name)
+            Log.i("Email", responseData.email)
+            Log.i("Mobile", "${responseData.mobile}")
+
+            Log.i("Is Profile Completed", "${responseData.profile_details.is_profile_completed}")
+            Log.i("Rating", "${responseData.profile_details.rating}")
+
+            Log.i("Data List Size", "${responseData.data_list.size}")
+            for(item in responseData.data_list.indices){
+                Log.i("Value $item", "${responseData.data_list[item]}")
+
+                Log.i("ID", "${responseData.data_list[item].id}")
+                Log.i("Value", responseData.data_list[item].value)
+            }
+
+            /*
             val jsonObject = JSONObject(result)
             val message = jsonObject.optString("message")  // we pass the key and get the value
             Log.i("Message", message)
@@ -130,7 +151,7 @@ class MainActivity : AppCompatActivity() {
                 Log.i("Data Item Id", "$dataItemId")
                 val dataItemValue = dataItemObject.optString("value")
                 Log.i("Data Item Value", "$dataItemValue")
-            }
+            } */
 
         }
 
