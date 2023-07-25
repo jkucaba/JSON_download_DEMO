@@ -5,6 +5,7 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -83,6 +84,34 @@ class MainActivity : AppCompatActivity() {
             cancelCustomProgressDialog()
 
             Log.i("JSON RESPONSE RESULT", result)
+
+            val jsonObject = JSONObject(result)
+            val message = jsonObject.optString("message")  // we pass the key and get the value
+            Log.i("Message", message)
+            val userId = jsonObject.optInt("user_id")
+            Log.i("User Id", "$userId")
+            val name = jsonObject.optString("name")
+            Log.i("Name", name)
+
+            val profileDetailsObject = jsonObject.optJSONObject("profile_details")  //acces json object
+            val isProfileCompleted = profileDetailsObject.optBoolean("is_profile_completed")
+            Log.i("Is Profile Completed", "$isProfileCompleted")
+
+            //list of json objects
+            val dataArray = jsonObject.optJSONArray("data_list")
+            Log.i("Data List size", "${dataArray.length()}")
+
+            for(item in 0 until dataArray.length()) {
+                Log.i("Value $item", "${dataArray[item]}")
+
+                val dataItemObject: JSONObject = dataArray[item] as JSONObject  //object of what is in the list
+
+                val dataItemId = dataItemObject.optInt("id")
+                Log.i("Data Item Id", "$dataItemId")
+                val dataItemValue = dataItemObject.optString("value")
+                Log.i("Data Item Value", "$dataItemValue")
+            }
+
         }
 
         private fun showCustomProgressDialog() {
